@@ -11,6 +11,12 @@ t_filter_module = t_tw.task_module('proj_lah','shot')
 
 print t_filter_module.get_with_filter(['shot.shot','eps.eps_name'],[['task.account','=',t_account]])
 
+print 'hello'
+
+a = 'Billy'
+b = raw_input('please tell me your number:')
+
+
 
 
 
