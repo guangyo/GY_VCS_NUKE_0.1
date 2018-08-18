@@ -1,0 +1,4 @@
+﻿这是一个NUKE和CGTEAMWORK的版本控制工具
+用于帮助合成师快速按照pipeline规范执行相应操作
+
+base文件夹中是CGTeamWork的API文件，便于调用和查看

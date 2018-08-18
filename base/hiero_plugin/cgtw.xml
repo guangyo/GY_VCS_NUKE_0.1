@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout version="1.0">
+    <window x="-9" y="-9" w="1938" h="1048" maximized="1" screen="0">
+        <splitter orientation="2">
+            <split size="648"/>
+            <splitter orientation="1">
+                <split size="536"/>
+                <splitter orientation="2">
+                    <split size="644"/>
+                    <dock id="" activePageId="cgtwfilter">
+                        <page id="cgtwfilter"/>
+                    </dock>
+                    <split size="0"/>
+                    <dock id="" activePageId="uk.co.thefoundry.spreadsheetview.1">
+                        <page id="uk.co.thefoundry.spreadsheetview.1"/>
+                    </dock>
+                </splitter>
+                <split size="1380"/>
+                <splitter orientation="1">
+                    <split size="852"/>
+                    <dock id="" activePageId="uk.co.thefoundry.sequenceviewer.1" focus="true">
+                        <page id="uk.co.thefoundry.sequenceviewer.1"/>
+                    </dock>
+                    <split size="524"/>
+                    <dock id="" activePageId="cgtwweb">
+                        <page id="cgtwweb"/>
+                    </dock>
+                </splitter>
+            </splitter>
+            <split size="326"/>
+            <splitter orientation="1">
+                <split size="1920"/>
+                <dock id="" activePageId="uk.co.thefoundry.timeline.1">
+                    <page id="uk.co.thefoundry.timeline.1" layout="splitter(0,1916)"/>
+                </dock>
+            </splitter>
+        </splitter>
+    </window>
+</layout>
