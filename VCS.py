@@ -84,6 +84,7 @@ class VcsPanel(nukescripts.PythonPanel):
         self.createFirstVersionButton.setFlag(nuke.STARTLINE)
         self.upSubVersionButton.setFlag(nuke.STARTLINE)
         self.mergeMainVersionButton.setFlag(nuke.STARTLINE)
+
         # Set Visible
         self.hideAllButton()
 
@@ -135,9 +136,12 @@ class VcsPanel(nukescripts.PythonPanel):
         if knob is self.projKnob or knob.name() == 'showPanel':
             self.refresh_panel_with_project('proj_'+self.projKnob.value())
             self.refresh_version_panel(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account)
+            self.version_check(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account,
+                               self.verKnob.value())
 
         if knob is self.epsKnob:
             self.shotKnob.setValues(getData.get_shot_list(self.jsData,'proj_'+self.projKnob.value(),self.epsKnob.value()))
+            self.refresh_version_panel(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account)
 
         if knob is self.shotKnob:
             self.refresh_version_panel(self.projKnob.value(),self.epsKnob.value(),self.shotKnob.value(),self.account)
@@ -159,6 +163,9 @@ class VcsPanel(nukescripts.PythonPanel):
             self.verKnob.setValue(self.vernum_check.findall(self.current_file_path)[0])
             self.version_check(self.projKnob.value(),self.epsKnob.value(),self.shotKnob.value(),self.account,
                                self.verKnob.value())
+
+
+
 
         if knob is self.verKnob or knob is self.shotKnob or knob is self.epsKnob:
             self.version_check(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account,
@@ -226,7 +233,7 @@ class VcsPanel(nukescripts.PythonPanel):
         verNum = self.vernum_check.findall(path)
         if len(verNum[-1]) == 4:
             new_version_num = str(int(verNum[-1][1:]) + 1)
-            new_version_num = (3 - len(new_version_num)) * '0' + new_version_num
+            new_version_num = 'v'+ (3 - len(new_version_num)) * '0' + new_version_num
             new_path = path.replace(verNum[-1], new_version_num)
         else:
             new_version_num = verNum[-1].split('_')[0]
@@ -300,7 +307,6 @@ class VcsPanel(nukescripts.PythonPanel):
                     # when selected current file
                     if self.ver_dict['ver_dict'][ver][1] == 'main':
                         # when selected main version
-                        print getData.get_status(self.jsData,'proj_'+self.projKnob.value(),self.epsKnob.value(),self.shotKnob.value())
                         if getData.get_status(self.jsData,'proj_'+self.projKnob.value(),self.epsKnob.value(),
                                               self.shotKnob.value())[1] not in ['Publish','Wait']:
                             # when client not Publish or Wait
@@ -333,9 +339,10 @@ class VcsPanel(nukescripts.PythonPanel):
         Create File path from Knob value
         :return: string with File path
         '''
-        filePath = 'Z:/GY_Project/{proj}/shot_work/{eps}/{shot}/cmp/work/{proj}_{eps}_{shot}_cmp_{account}_{version}.nk'.format(
+        print self.verKnob.value()
+        filePath = 'Z:/GY_Project/{proj}/shot_work/{eps}/{shot}/cmp/work/{proj}_{eps}_{shot}_cmp_{account}_v{version}.nk'.format(
             proj = self.projKnob.value() , eps = self.epsKnob.value() , shot = self.shotKnob.value() , account = self.account,
-            version = '001' if self.verKnob.value() == '' else self.verKnob.value()
+            version = '001' if self.verKnob.value() else self.verKnob.value()
         )
         return filePath
 
