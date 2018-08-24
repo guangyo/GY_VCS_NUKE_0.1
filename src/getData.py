@@ -1,4 +1,5 @@
-import sys,os,json
+import sys,os,json,re
+from collections import OrderedDict
 
 # direction of JSON file
 jsonFilePath = r'C:\HOME\.nuke\VCS\DATA\data.json'
@@ -65,6 +66,7 @@ def get_task_list(data,proj):
     :param proj: project name with user choose
     :return: list of all task in this project
     '''
+    task_list = []
     for project in data[1:]:
         if proj in project.keys():
             task_list = project[proj]
@@ -130,8 +132,49 @@ def getProjDirDict(data):
 
     return projDirDict
 
+def script_version_info(proj,eps,shot,account):
+    '''
+    This function is use to check Version info of current task
+    :param proj: proj name get from user Panel
+    :param eps: eps name get from user Panel
+    :param shot: shot name get from user Panel
+    :return: Dict contains all info with this task version
+    '''
+
+    # create version re match
+    ver_check = re.compile('^%s_%s_%s_cmp_%s_v\d\d\d_?\d{,3}.nk$' % (proj,eps,shot,account), re.IGNORECASE)
+    vernum_check = re.compile(r'v\d\d\d_?\d{,3}', re.IGNORECASE)
+
+    # use to match main version
+    ver_main_check = re.compile(r'^\d\d\d.nk$', re.IGNORECASE)
+
+    # use to match sub veision
+    ver_sub_check = re.compile(r'^\d\d\d_\d{,3}.nk$', re.IGNORECASE)
+
+    version_info = {}
+
+    # all math version in this dict key is version number value is fileName for thisversion
+    version_info['ver_dict'] = OrderedDict()
+
+    dir_name = os.path.join('Z:/GY_Project',proj,'shot_work',eps,shot,'cmp','work')
+
+    # List all .nk file in this task's dir
+    version_info['nukeScriptList'] = [file for file in os.listdir(dir_name) if os.path.splitext(file)[1] == '.nk']
+
+    # check versions which match format and create ver_dict
+    for file in version_info['nukeScriptList']:
+        if ver_check.match(file):
+            ver_number = vernum_check.findall(file)[0]
+            ver_number_len = len(ver_number)
+            if ver_number_len == 4:
+                version_status = 'main'
+            elif ver_number_len > 4:
+                version_status = 'sub'
+            version_info['ver_dict'][ver_number] = [os.path.join(dir_name,file),version_status]
+    return version_info
+
 if __name__ == '__main__':
-    print getProjDirDict(getJsonData())
+    print script_version_info('lah','01','shot02','billy')
 
 
 
