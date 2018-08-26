@@ -359,9 +359,6 @@ class VcsPanel(nukescripts.PythonPanel):
                             if task_statu[1] != 'Retake':
                                 # when client not Publish or Wait
                                 self.hideallbutton()
-                                # self.upMainVersionButton.setVisible(True)
-                                # self.upSubVersionButton.setVisible(True)
-                                # self.upSubVersionButton.clearFlag(nuke.STARTLINE)
                             else:
                                 # when client need Retake
                                 self.hideallbutton()
@@ -407,6 +404,3 @@ class VcsPanel(nukescripts.PythonPanel):
                    '.nk'.format(proj=self.projKnob.value(), eps=self.epsKnob.value(), shot=self.shotKnob.value(),
                                 account=self.account, version=ver)
         return filepath
-
-
-
