@@ -76,21 +76,21 @@ class VcsPanel(nukescripts.PythonPanel):
         # CREATE BUTTON
         self.openFileButton = nuke.PyScript_Knob('openFile','Open File','')
         self.createFirstVersionButton = nuke.PyScript_Knob('cFirVer','Create First Version','')
-        self.mergeMainVersionButton = nuke.PyScript_Knob('mMainVer','Merge Main Version','')
+        self.createMainVersionButton = nuke.PyScript_Knob('CMainVer','Create Main Version','')
         self.upSubVersionButton = nuke.PyScript_Knob('upSubVer','Up Sub Version', '')
         self.upMainVersionButton = nuke.PyScript_Knob('upMainVer','Up Main Version','')
         # Set Flag
         self.openFileButton.setFlag(nuke.STARTLINE)
         self.createFirstVersionButton.setFlag(nuke.STARTLINE)
         self.upSubVersionButton.setFlag(nuke.STARTLINE)
-        self.mergeMainVersionButton.setFlag(nuke.STARTLINE)
+        self.createMainVersionButton.setFlag(nuke.STARTLINE)
 
         # Set Visible
         self.hideAllButton()
 
         # ADD KNOBS
         for k in (self.projKnob, self.epsKnob, self.shotKnob, self.verKnob,self.createFirstVersionButton,self.upMainVersionButton,
-                  self.upSubVersionButton,self.mergeMainVersionButton,self.openFileButton):
+                  self.upSubVersionButton,self.createMainVersionButton,self.openFileButton):
             self.addKnob(k)
 
     @staticmethod
@@ -173,7 +173,7 @@ class VcsPanel(nukescripts.PythonPanel):
             nuke.scriptOpen(self.get_filePath_from_knob())
             self.hide()
 
-        if knob is self.mergeMainVersionButton:
+        if knob is self.createMainVersionButton:
             self.next_mainVersion(self.current_file_path)
             self.hide()
 
@@ -220,23 +220,29 @@ class VcsPanel(nukescripts.PythonPanel):
         if len(verNum[-1]) == 4:
             # when current file is a main version
             # find last subVersion in this main version
-            temp_sub_version_list = []
-            verdict = getData.script_version_info(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(),
-                                                  self.account)['ver_dict']
-            # take subVersion with this mainVersion in temp_sub_version_list
-            for ver in verdict.keys():
-                if verNum[-1] in ver and verdict[ver][1] == 'sub':
-                    temp_sub_version_list.append(ver)
 
-            if temp_sub_version_list:
-                # if have subversion for in this main version
-                sub_version = str(int(temp_sub_version_list[-1][-3:])+1).zfill(3)
-            else:
-                sub_version = '001'
+            sub_version = 'v' + str(int(verNum[-1][1:]) + 1).zfill(3) + '001'
 
-            new_version_num = verNum[-1] + sub_version
+            new_version_num = sub_version
             new_path = path.replace(verNum[-1], new_version_num)
             nuke.scriptSaveAs(new_path)
+
+            # set write export to subVersion
+            cur_fileName = nuke.scriptName()
+            publish_export_dir = os.path.dirname(cur_fileName)
+            if not os.path.exists(publish_export_dir):
+                os.makedirs(publish_export_dir)
+            file_name = os.path.basename(cur_fileName).replace('.nk', '.####.exr')
+            for node in nuke.allNodes(filter='Write'):
+                if node['name'].getValue() == 'Publish':
+                    node['name'].setValue('Write_exr')
+                    node['file'].setValue(publish_export_dir + '/render/' + new_version_num + '/' + file_name)
+                    node['file_type'].setValue('exr')
+                    return
+                else:
+                    nuke.message('Not find Write node named Write_exr,please set the Write node by yourself~')
+
+
         else:
             # when current file is a sub version
             nukescripts.script_version_up()
@@ -249,27 +255,23 @@ class VcsPanel(nukescripts.PythonPanel):
         :return: None
         """
         verNum = self.vernum_check.findall(path)
-        if len(verNum[-1]) == 4:
-            # when current file is a main version
-            nukescripts.script_version_up()
-        else:
-            # when current file is a sub version
-            new_version_num = verNum[-1][:4]
-            new_path = path.replace(verNum[-1], new_version_num)
-            nuke.scriptSaveAs(new_path)
 
-            # set write export to publish
-            cur_fileName = nuke.scriptName()
-            publish_export_dir = os.path.dirname(cur_fileName)[:-4] + 'publish' + '/' + verNum[-1][:4]
-            if not os.path.exists(publish_export_dir):
-                os.makedirs(publish_export_dir)
-            file_name = os.path.basename(cur_fileName).replace('.nk', '.mov')
-            for node in nuke.allNodes():
-                if node['name'].getValue() == 'Write_exr':
-                    node['name'].setValue('Publish')
-                    node['file'].setValue(publish_export_dir + '/' + file_name)
-                    node['file_type'].setValue('mov')
-                    return
+        new_version_num = verNum[-1][:4]
+        new_path = path.replace(verNum[-1], new_version_num)
+        nuke.scriptSaveAs(new_path)
+
+        # set write export to publish
+        cur_fileName = nuke.scriptName()
+        publish_export_dir = os.path.dirname(cur_fileName)[:-4] + 'publish' + '/' + verNum[-1][:4]
+        if not os.path.exists(publish_export_dir):
+            os.makedirs(publish_export_dir)
+        file_name = os.path.basename(cur_fileName).replace('.nk', '.mov')
+        for node in nuke.allNodes(filter='Write'):
+            if node['name'].getValue() == 'Write_exr':
+                node['name'].setValue('Publish')
+                node['file'].setValue(publish_export_dir + '/' + file_name)
+                node['file_type'].setValue('mov')
+                return
             else:
                 nuke.message('Not find Write node named Write_exr,please set the Write node by yourself~')
 
@@ -318,7 +320,7 @@ class VcsPanel(nukescripts.PythonPanel):
         Hide all button
         :return: None
         '''
-        for b in (self.upMainVersionButton,self.openFileButton,self.createFirstVersionButton,self.upSubVersionButton,self.mergeMainVersionButton):
+        for b in (self.upMainVersionButton,self.openFileButton,self.createFirstVersionButton,self.upSubVersionButton,self.createMainVersionButton):
             b.setVisible(False)
 
     def version_check(self,proj,eps,shot,account,ver = 'v001'):
@@ -354,27 +356,34 @@ class VcsPanel(nukescripts.PythonPanel):
                         sel_fileName = sel_fileName.replace('\\', '/')
 
                     if sel_fileName == nuke.scriptName():
+                        task_statu = getData.get_status(self.jsData,'proj_'+self.projKnob.value(),self.epsKnob.value(),
+                                                        self.shotKnob.value())
                         # when selected current file
                         if self.ver_dict['ver_dict'][ver][1] == 'main':
                             # when selected main version
-                            if getData.get_status(self.jsData,'proj_'+self.projKnob.value(),self.epsKnob.value(),
-                                                  self.shotKnob.value())[1] not in ['Publish','Wait']:
+                            if task_statu[1] != 'Retake':
                                 # when client not Publish or Wait
                                 self.hideAllButton()
-                                self.upMainVersionButton.setVisible(True)
-                                self.upSubVersionButton.setVisible(True)
-                                self.upSubVersionButton.clearFlag(nuke.STARTLINE)
+                                # self.upMainVersionButton.setVisible(True)
+                                # self.upSubVersionButton.setVisible(True)
+                                # self.upSubVersionButton.clearFlag(nuke.STARTLINE)
                             else:
-                                # when client need Publish
+                                # when client need Retake
                                 self.hideAllButton()
                                 self.upSubVersionButton.setVisible(True)
                                 self.upSubVersionButton.clearFlag(nuke.STARTLINE)
                         else:
                             # when selected sub version
-                            self.hideAllButton()
-                            self.upSubVersionButton.setVisible(True)
-                            self.mergeMainVersionButton.setVisible(True)
-                            self.mergeMainVersionButton.clearFlag(nuke.STARTLINE)
+                            if task_statu[0] == 'Publish':
+                                # when leader statu is 'Publish'
+                                self.hideAllButton()
+                                self.upSubVersionButton.setVisible(True)
+                                self.createMainVersionButton.setVisible(True)
+                                self.createMainVersionButton.clearFlag(nuke.STARTLINE)
+                            else:
+                                #when leader statu is not 'Publish'
+                                self.hideAllButton()
+                                self.upSubVersionButton.setVisible(True)
                     else:
                         # when selected other file
                         self.hideAllButton()
@@ -397,9 +406,9 @@ class VcsPanel(nukescripts.PythonPanel):
         if self.verKnob.visible():
             ver = self.verKnob.value()
         else:
-            ver = '001001'
+            ver = 'v001001'
 
-        filePath = 'Z:/GY_Project/{proj}/shot_work/{eps}/{shot}/cmp/work/{proj}_{eps}_{shot}_cmp_{account}_v{version}.nk'.format(
+        filePath = 'Z:/GY_Project/{proj}/shot_work/{eps}/{shot}/cmp/work/{proj}_{eps}_{shot}_cmp_{account}_{version}.nk'.format(
             proj = self.projKnob.value() , eps = self.epsKnob.value() , shot = self.shotKnob.value() , account = self.account,
             version = ver)
         return filePath
