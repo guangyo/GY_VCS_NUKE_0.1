@@ -16,8 +16,3 @@ def get_current_script_name():
     except:
         return 'unsaveFile'
 
-def get_last_Version():
-    '''
-
-    :return:
-    '''

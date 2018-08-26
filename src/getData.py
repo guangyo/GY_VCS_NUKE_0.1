@@ -142,14 +142,8 @@ def script_version_info(proj,eps,shot,account):
     '''
 
     # create version re match
-    ver_check = re.compile('^%s_%s_%s_cmp_%s_v\d\d\d_?\d{,3}.nk$' % (proj,eps,shot,account), re.IGNORECASE)
-    vernum_check = re.compile(r'v\d\d\d_?\d{,3}', re.IGNORECASE)
-
-    # use to match main version
-    ver_main_check = re.compile(r'^\d\d\d.nk$', re.IGNORECASE)
-
-    # use to match sub veision
-    ver_sub_check = re.compile(r'^\d\d\d_\d{,3}.nk$', re.IGNORECASE)
+    ver_check = re.compile('^%s_%s_%s_cmp_%s_v\d{3,6}.nk$' % (proj,eps,shot,account), re.IGNORECASE)
+    vernum_check = re.compile(r'v\d{3,6}', re.IGNORECASE)
 
     version_info = {}
 
@@ -162,9 +156,10 @@ def script_version_info(proj,eps,shot,account):
     version_info['nukeScriptList'] = [file for file in os.listdir(dir_name) if os.path.splitext(file)[1] == '.nk']
 
     # check versions which match format and create ver_dict
+    version_status = 'none'
     for file in version_info['nukeScriptList']:
         if ver_check.match(file):
-            ver_number = vernum_check.findall(file)[0]
+            ver_number = vernum_check.findall(file)[-1]
             ver_number_len = len(ver_number)
             if ver_number_len == 4:
                 version_status = 'main'

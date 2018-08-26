@@ -34,13 +34,13 @@ class VcsPanel(nukescripts.PythonPanel):
         self.proj_dir_dict = getData.getProjDirDict(self.jsData)
 
         # creat vertion re match
-        self.ver_check = re.compile(r'^\d\d\d_?\d{,3}.nk$', re.IGNORECASE)
-        self.vernum_check = re.compile(r'v\d\d\d_?\d{,3}', re.IGNORECASE)
+        self.ver_check = re.compile(r'^\d{3,6}.nk$', re.IGNORECASE)
+        self.vernum_check = re.compile(r'v\d{3,6}', re.IGNORECASE)
         # use to match main version
         self.ver_main_check = re.compile(r'^\d\d\d.nk$', re.IGNORECASE)
 
         # use to match sub veision
-        self.ver_sub_check = re.compile(r'^\d\d\d_\d{,3}.nk$', re.IGNORECASE)
+        self.ver_sub_check = re.compile(r'^\d\d\d\d\d\d.nk$', re.IGNORECASE)
 
         # get current file path
         self.current_file_path = scriptCheck.get_current_script_name()
@@ -156,15 +156,13 @@ class VcsPanel(nukescripts.PythonPanel):
             self.projKnob.setValue(self.cur_task_info[0])
             # refresh Panel
             self.refresh_panel_with_project('proj_'+self.projKnob.value())
-            # refresh Panels
+            # set default Panels
             self.epsKnob.setValue(self.cur_task_info[1])
             self.shotKnob.setValue(self.cur_task_info[2])
             self.refresh_version_panel(self.projKnob.value(),self.epsKnob.value(),self.shotKnob.value(),self.account)
             self.verKnob.setValue(self.vernum_check.findall(self.current_file_path)[0])
             self.version_check(self.projKnob.value(),self.epsKnob.value(),self.shotKnob.value(),self.account,
                                self.verKnob.value())
-
-
 
 
         if knob is self.verKnob or knob is self.shotKnob or knob is self.epsKnob:
@@ -176,27 +174,46 @@ class VcsPanel(nukescripts.PythonPanel):
             self.hide()
 
         if knob is self.mergeMainVersionButton:
-            nuke.scriptSaveAs(self.next_mainVersion(self.current_file_path))
+            self.next_mainVersion(self.current_file_path)
             self.hide()
 
         if knob is self.upSubVersionButton:
-            nuke.scriptSaveAs(self.next_subVersion(self.current_file_path))
+            self.next_subVersion(self.current_file_path)
             self.hide()
 
         if knob is self.createFirstVersionButton:
-            nuke.scriptSaveAs(self.get_filePath_from_knob())
+            first_version_path = self.get_filePath_from_knob()
+            nuke.scriptSaveAs(first_version_path)
+            temp_file_match = re.compile(r'^%s_%s_%s_cmp_yourName_v\d{3,6}.nk$' %
+                                         (self.projKnob.value(),self.epsKnob.value(),self.shotKnob.value()))
+            ver_dict = getData.script_version_info(self.projKnob.value(),self.epsKnob.value(),
+                                                   self.shotKnob.value(),self.account)
+            if ver_dict['nukeScriptList']:
+                # when have script already in this direction
+                for script in ver_dict['nukeScriptList']:
+                    # when have template file
+                    if temp_file_match.match(script):
+                        try:
+                            nuke.scriptReadFile(os.path.dirname(first_version_path) + '/' + script)
+                        except RuntimeError:
+                            pass
+                        for node in nuke.allNodes():
+                            if node.Class() == 'Write':
+                                temp_file_name = node['file'].getValue()
+                                node['file'].setValue(temp_file_name.replace('yourName',self.account))
+                        nuke.scriptSave()
             self.hide()
 
         if knob is self.upMainVersionButton:
-            nuke.scriptSaveAs(self.next_mainVersion(self.current_file_path))
+            self.next_mainVersion(self.current_file_path)
             self.hide()
 
 
     def next_subVersion(self,path):
         """
-        This function is use to get Next subVersion file path
+        This function is use to Up subVersion
         :param path: path of current file
-        :return: string of next subVersion file path
+        :return: None
         """
         sub_version = 0
         verNum = self.vernum_check.findall(path)
@@ -204,7 +221,8 @@ class VcsPanel(nukescripts.PythonPanel):
             # when current file is a main version
             # find last subVersion in this main version
             temp_sub_version_list = []
-            verdict = getData.script_version_info(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(),self.account)['ver_dict']
+            verdict = getData.script_version_info(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(),
+                                                  self.account)['ver_dict']
             # take subVersion with this mainVersion in temp_sub_version_list
             for ver in verdict.keys():
                 if verNum[-1] in ver and verdict[ver][1] == 'sub':
@@ -212,33 +230,51 @@ class VcsPanel(nukescripts.PythonPanel):
 
             if temp_sub_version_list:
                 # if have subversion for in this main version
-                sub_version = str(int(temp_sub_version_list[-1].split('_')[1])+1)
+                sub_version = str(int(temp_sub_version_list[-1][-3:])+1).zfill(3)
             else:
-                sub_version = '1'
+                sub_version = '001'
 
-            new_version_num = verNum[-1] + '_' + sub_version
+            new_version_num = verNum[-1] + sub_version
             new_path = path.replace(verNum[-1], new_version_num)
+            nuke.scriptSaveAs(new_path)
         else:
-            sub_version = str(int(verNum[-1].split('_')[1]) + 1)
-            new_version_num = verNum[-1].split('_')[0] + '_' + sub_version
-            new_path = path.replace(verNum[-1], new_version_num)
-        return new_path
+            # when current file is a sub version
+            nukescripts.script_version_up()
+
 
     def next_mainVersion(self,path):
         """
-        This function is use to get Next mainVersion file path
+        This function is use to Up mainVersion file
         :param path: path of current file
-        :return: string of next mainVersion file path
+        :return: None
         """
         verNum = self.vernum_check.findall(path)
         if len(verNum[-1]) == 4:
-            new_version_num = str(int(verNum[-1][1:]) + 1)
-            new_version_num = 'v'+ (3 - len(new_version_num)) * '0' + new_version_num
-            new_path = path.replace(verNum[-1], new_version_num)
+            # when current file is a main version
+            nukescripts.script_version_up()
         else:
-            new_version_num = verNum[-1].split('_')[0]
+            # when current file is a sub version
+            new_version_num = verNum[-1][:4]
             new_path = path.replace(verNum[-1], new_version_num)
-        return new_path
+            nuke.scriptSaveAs(new_path)
+
+            # set write export to publish
+            cur_fileName = nuke.scriptName()
+            publish_export_dir = os.path.dirname(cur_fileName)[:-4] + 'publish' + '/' + verNum[-1][:4]
+            if not os.path.exists(publish_export_dir):
+                os.makedirs(publish_export_dir)
+            file_name = os.path.basename(cur_fileName).replace('.nk', '.mov')
+            for node in nuke.allNodes():
+                if node['name'].getValue() == 'Write_exr':
+                    node['name'].setValue('Publish')
+                    node['file'].setValue(publish_export_dir + '/' + file_name)
+                    node['file_type'].setValue('mov')
+                    return
+            else:
+                nuke.message('Not find Write node named Write_exr,please set the Write node by yourself~')
+
+
+
 
 
     def refresh_panel_with_project(self,proj):
@@ -247,8 +283,14 @@ class VcsPanel(nukescripts.PythonPanel):
         :param proj:Value of project panel
         :return:None
         '''
-        self.epsKnob.setValues(getData.get_eps_list(self.jsData, proj))
-        self.shotKnob.setValues(getData.get_shot_list(self.jsData,proj, self.epsKnob.value()))
+        eps_list = getData.get_eps_list(self.jsData, proj)
+        if eps_list:
+            self.epsKnob.setValues(eps_list)
+            self.epsKnob.setValue(str(eps_list[0]))
+        shot_list = getData.get_shot_list(self.jsData,proj, self.epsKnob.value())
+        if shot_list:
+            self.shotKnob.setValues(shot_list)
+            self.shotKnob.setValue(str(shot_list[0]))
 
     def refresh_version_panel(self,proj,eps,shot,account):
         '''
@@ -260,15 +302,16 @@ class VcsPanel(nukescripts.PythonPanel):
         :return: None
         '''
         try:
-            self.ver_dict = getData.script_version_info(proj, eps,
-                                                        shot, account)
+            self.ver_dict = getData.script_version_info(proj, eps, shot, account)
             if self.ver_dict['ver_dict'].keys():
                 self.verKnob.setVisible(True)
                 self.verKnob.setValues(self.ver_dict['ver_dict'].keys())
+                self.verKnob.setValue(self.ver_dict['ver_dict'].keys()[0])
             else:
                 self.verKnob.setVisible(False)
         except WindowsError:
             nuke.message('This project is too old~')
+
 
     def hideAllButton(self):
         '''
@@ -301,50 +344,67 @@ class VcsPanel(nukescripts.PythonPanel):
                 self.createFirstVersionButton.setVisible(True)
         else:
             # when selected file in task
-            if self.ver_dict['ver_dict'].keys():
-                # when dir have version file
-                if self.ver_dict['ver_dict'][ver][0].replace('\\', '/') == nuke.scriptName():
-                    # when selected current file
-                    if self.ver_dict['ver_dict'][ver][1] == 'main':
-                        # when selected main version
-                        if getData.get_status(self.jsData,'proj_'+self.projKnob.value(),self.epsKnob.value(),
-                                              self.shotKnob.value())[1] not in ['Publish','Wait']:
-                            # when client not Publish or Wait
-                            self.hideAllButton()
-                            self.upMainVersionButton.setVisible(True)
-                            self.upSubVersionButton.setVisible(True)
-                            self.upSubVersionButton.clearFlag(nuke.STARTLINE)
+            try:
+                if self.ver_dict['ver_dict'].keys() and self.ver_dict['ver_dict'][ver]:
+                    # when dir have version file
+
+                    # replace \\ to /
+                    sel_fileName = self.ver_dict['ver_dict'][ver][0]
+                    if '\\' in sel_fileName:
+                        sel_fileName = sel_fileName.replace('\\', '/')
+
+                    if sel_fileName == nuke.scriptName():
+                        # when selected current file
+                        if self.ver_dict['ver_dict'][ver][1] == 'main':
+                            # when selected main version
+                            if getData.get_status(self.jsData,'proj_'+self.projKnob.value(),self.epsKnob.value(),
+                                                  self.shotKnob.value())[1] not in ['Publish','Wait']:
+                                # when client not Publish or Wait
+                                self.hideAllButton()
+                                self.upMainVersionButton.setVisible(True)
+                                self.upSubVersionButton.setVisible(True)
+                                self.upSubVersionButton.clearFlag(nuke.STARTLINE)
+                            else:
+                                # when client need Publish
+                                self.hideAllButton()
+                                self.upSubVersionButton.setVisible(True)
+                                self.upSubVersionButton.clearFlag(nuke.STARTLINE)
                         else:
-                            # when client need Publish
+                            # when selected sub version
                             self.hideAllButton()
                             self.upSubVersionButton.setVisible(True)
-                            self.upSubVersionButton.clearFlag(nuke.STARTLINE)
+                            self.mergeMainVersionButton.setVisible(True)
+                            self.mergeMainVersionButton.clearFlag(nuke.STARTLINE)
                     else:
-                        # when selected sub version
+                        # when selected other file
                         self.hideAllButton()
-                        self.upSubVersionButton.setVisible(True)
-                        self.mergeMainVersionButton.setVisible(True)
-                        self.mergeMainVersionButton.clearFlag(nuke.STARTLINE)
+                        self.openFileButton.setVisible(True)
                 else:
-                    # when selected other file
+                    # when dir is not have version file
                     self.hideAllButton()
-                    self.openFileButton.setVisible(True)
-            else:
-                # when dir is not have version file
+                    self.createFirstVersionButton.setVisible(True)
+            except KeyError:
                 self.hideAllButton()
-                self.createFirstVersionButton.setVisible(True)
+                self.refresh_version_panel(self.projKnob.value(),self.epsKnob.value(),self.shotKnob.value(),self.account)
+
 
     def get_filePath_from_knob(self):
         '''
         Create File path from Knob value
         :return: string with File path
         '''
-        print self.verKnob.value()
+
+        if self.verKnob.visible():
+            ver = self.verKnob.value()
+        else:
+            ver = '001001'
+
         filePath = 'Z:/GY_Project/{proj}/shot_work/{eps}/{shot}/cmp/work/{proj}_{eps}_{shot}_cmp_{account}_v{version}.nk'.format(
             proj = self.projKnob.value() , eps = self.epsKnob.value() , shot = self.shotKnob.value() , account = self.account,
-            version = '001' if self.verKnob.value() else self.verKnob.value()
-        )
+            version = ver)
         return filePath
+
+
 
 if __name__ == '__main__':
     main()
