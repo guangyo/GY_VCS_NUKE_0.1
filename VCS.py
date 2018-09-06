@@ -138,11 +138,40 @@ class VcsPanel(nukescripts.PythonPanel):
         return filepath.split('_')[:3]
 
     def knobChanged(self, knob):
-        if knob is self.projKnob or knob.name() == 'showPanel':
+        if knob is self.projKnob:
             self.refresh_panel_with_project('proj_'+self.projKnob.value())
             self.refresh_version_panel(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account)
             self.version_check(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account,
                                self.verKnob.value())
+
+        if knob.name() == 'showPanel':
+            if self.in_task == 'have':
+                '''
+                Set default value with current task if this script in task
+                '''
+                # get task info from fileName
+                self.cur_task_info = self.get_task_info_from_file(os.path.basename(self.current_file_path))
+                # set Project Value
+                self.projKnob.setValue(self.cur_task_info[0])
+                # refresh Panel
+                self.refresh_panel_with_project('proj_' + self.projKnob.value())
+                # set default Panels
+                self.epsKnob.setValue(self.cur_task_info[1])
+                self.shotKnob.setValue(self.cur_task_info[2])
+                self.refresh_version_panel(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(),
+                                           self.account)
+
+                self.verKnob.setValue(self.vernum_check.findall(self.current_file_path)[0])
+
+                self.version_check(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account,
+                                   self.verKnob.value())
+            else:
+                self.refresh_panel_with_project('proj_' + self.projKnob.value())
+                self.refresh_version_panel(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account)
+                self.version_check(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account,
+                                   self.verKnob.value())
+
+
 
         if knob is self.epsKnob:
             self.shotKnob.setValues(getData.get_shot_list(self.jsData, 'proj_'+self.projKnob.value(),
@@ -152,27 +181,11 @@ class VcsPanel(nukescripts.PythonPanel):
         if knob is self.shotKnob:
             self.refresh_version_panel(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account)
 
-        if knob.name() == 'showPanel' and self.in_task == 'have':
-            '''
-            Set default value with current task if this script in task
-            '''
-            # get task info from fileName
-            self.cur_task_info = self.get_task_info_from_file(os.path.basename(self.current_file_path))
-            # set Project Value
-            self.projKnob.setValue(self.cur_task_info[0])
-            # refresh Panel
-            self.refresh_panel_with_project('proj_'+self.projKnob.value())
-            # set default Panels
-            self.epsKnob.setValue(self.cur_task_info[1])
-            self.shotKnob.setValue(self.cur_task_info[2])
-            self.refresh_version_panel(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account)
-            self.verKnob.setValue(self.vernum_check.findall(self.current_file_path)[0])
-            self.version_check(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account,
-                               self.verKnob.value())
 
         if knob is self.verKnob or knob is self.shotKnob or knob is self.epsKnob:
             self.version_check(self.projKnob.value(), self.epsKnob.value(), self.shotKnob.value(), self.account,
                                self.verKnob.value())
+
 
         if knob is self.openFileButton:
             nuke.scriptOpen(self.get_filepath_from_knob())
@@ -212,6 +225,8 @@ class VcsPanel(nukescripts.PythonPanel):
         if knob is self.upMainVersionButton:
             self.next_mainversion(self.current_file_path)
             self.hide()
+
+
 
     def next_subversion(self, path):
         """
@@ -307,7 +322,7 @@ class VcsPanel(nukescripts.PythonPanel):
             else:
                 self.verKnob.setVisible(False)
         except WindowsError:
-            nuke.message('This project is too old~')
+            pass
 
     def hideallbutton(self):
         """

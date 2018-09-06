@@ -5,7 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VCS.py" beforeDir="false" afterPath="$PROJECT_DIR$/VCS.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/getData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/getData.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scriptCheck.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/scriptCheck.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/withCgtw.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/withCgtw.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -39,21 +38,23 @@
     <session id="1800381809">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="6" />
+          <entry key="project.closed" value="8" />
           <entry key="project.open.time.0" value="3" />
           <entry key="project.open.time.18" value="1" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.21" value="1" />
+          <entry key="project.open.time.22" value="1" />
           <entry key="project.open.time.26" value="1" />
           <entry key="project.open.time.29" value="1" />
           <entry key="project.open.time.3" value="3" />
-          <entry key="project.opened" value="11" />
+          <entry key="project.opened" value="12" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="pstat" value="10" />
           <entry key="py" value="51" />
+          <entry key="pyi" value="1" />
           <entry key="txt" value="1" />
         </counts>
       </usages-collector>
@@ -62,33 +63,33 @@
           <entry key="PLAIN_TEXT" value="1" />
           <entry key="Profiler Session" value="10" />
           <entry key="Python" value="51" />
+          <entry key="PythonStub" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="17596" />
-          <entry key="txt" value="169" />
+          <entry key="py" value="17773" />
+          <entry key="txt" value="180" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="169" />
-          <entry key="Python" value="17596" />
+          <entry key="PLAIN_TEXT" value="180" />
+          <entry key="Python" value="17773" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/VCS.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="222">
-              <caret line="142" column="98" lean-forward="true" selection-start-line="142" selection-start-column="98" selection-end-line="142" selection-end-column="98" />
+            <state relative-caret-position="643">
+              <caret line="173" lean-forward="true" selection-start-line="173" selection-end-line="173" />
               <folding>
-                <element signature="e#0#29#0" expanded="true" />
-                <marker date="1535276536460" expanded="true" signature="1877:1887" ph="..." />
-                <marker date="1535276536460" expanded="true" signature="9169:11806" ph="..." />
+                <marker date="1535346391577" expanded="true" signature="1877:1887" ph="..." />
+                <marker date="1535346391577" expanded="true" signature="9567:12204" ph="..." />
               </folding>
             </state>
           </provider>
@@ -97,20 +98,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/withCgtw.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1100">
-              <caret line="44" column="50" lean-forward="true" selection-start-line="44" selection-start-column="50" selection-end-line="44" selection-end-column="50" />
+            <state relative-caret-position="1725">
+              <caret line="69" column="28" selection-start-line="69" selection-start-column="28" selection-end-line="69" selection-end-column="28" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/getData.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="497">
-              <caret line="188" column="26" lean-forward="true" selection-start-line="188" selection-start-column="26" selection-end-line="188" selection-end-column="26" />
-              <folding>
-                <element signature="e#1#10#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="4050">
+              <caret line="165" column="44" selection-start-line="165" selection-start-column="44" selection-end-line="165" selection-end-column="44" />
             </state>
           </provider>
         </entry>
@@ -119,7 +117,7 @@
         <entry file="file://$PROJECT_DIR$/src/scriptCheck.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="300">
-              <caret line="12" column="7" lean-forward="true" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
+              <caret line="12" column="7" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
             </state>
           </provider>
         </entry>
@@ -150,6 +148,8 @@
       <find>next_sub</find>
       <find>open</find>
       <find>refre</find>
+      <find>message</find>
+      <find>active</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -167,9 +167,9 @@
         <option value="$PROJECT_DIR$/menu.py" />
         <option value="$PROJECT_DIR$/nukescripts/panels.py" />
         <option value="$PROJECT_DIR$/src/scriptCheck.py" />
+        <option value="$PROJECT_DIR$/src/getData.py" />
         <option value="$PROJECT_DIR$/src/withCgtw.py" />
         <option value="$PROJECT_DIR$/VCS.py" />
-        <option value="$PROJECT_DIR$/src/getData.py" />
       </list>
     </option>
   </component>
@@ -180,8 +180,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1393" />
-    <option name="width" value="1174" />
+    <option name="x" value="-7" />
+    <option name="width" value="1294" />
     <option name="height" value="1057" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -446,7 +446,14 @@
       <option name="project" value="LOCAL" />
       <updated>1535272737393</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Debug~">
+      <created>1535277029012</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1535277029012</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TodoView">
@@ -467,7 +474,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.35875404" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.35875404" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3991323" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -564,7 +571,8 @@
     <MESSAGE value="Finished 0.1 version Debug !!!" />
     <MESSAGE value="Debug !!!" />
     <MESSAGE value="PEP8 check~" />
-    <option name="LAST_COMMIT_MESSAGE" value="PEP8 check~" />
+    <MESSAGE value="Debug~" />
+    <option name="LAST_COMMIT_MESSAGE" value="Debug~" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://C:/Program Files/Nuke11.0v3/lib/ftplib.py">
@@ -684,38 +692,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scriptCheck.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="12" column="7" lean-forward="true" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/withCgtw.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1100">
-          <caret line="44" column="50" lean-forward="true" selection-start-line="44" selection-start-column="50" selection-end-line="44" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/VCS.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="222">
-          <caret line="142" column="98" lean-forward="true" selection-start-line="142" selection-start-column="98" selection-end-line="142" selection-end-column="98" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-            <marker date="1535276536460" expanded="true" signature="1877:1887" ph="..." />
-            <marker date="1535276536460" expanded="true" signature="9169:11806" ph="..." />
-          </folding>
+        <state relative-caret-position="1725">
+          <caret line="69" column="28" selection-start-line="69" selection-start-column="28" selection-end-line="69" selection-end-column="28" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/getData.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="497">
-          <caret line="188" column="26" lean-forward="true" selection-start-line="188" selection-start-column="26" selection-end-line="188" selection-end-column="26" />
+        <state relative-caret-position="4050">
+          <caret line="165" column="44" selection-start-line="165" selection-start-column="44" selection-end-line="165" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scriptCheck.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="12" column="7" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/typeshed/stdlib/2/typing.pyi">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="376">
+          <caret line="394" column="8" selection-start-line="394" selection-start-column="8" selection-end-line="394" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VCS.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="643">
+          <caret line="173" lean-forward="true" selection-start-line="173" selection-end-line="173" />
           <folding>
-            <element signature="e#1#10#0" expanded="true" />
+            <marker date="1535346391577" expanded="true" signature="1877:1887" ph="..." />
+            <marker date="1535346391577" expanded="true" signature="9567:12204" ph="..." />
           </folding>
         </state>
       </provider>

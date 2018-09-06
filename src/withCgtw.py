@@ -64,7 +64,7 @@ def getProjects(t_tw):
     project_list = t_tw.info_module('public', 'project').\
         get_with_filter(['project.database'],
                         [['project.status', '!=', 'Lost'],
-                         'and', ['project.status', '!=', 'Close']])
+                         'and', ['project.status', '=', 'Active']])
 
     # get final list
     for pro in project_list:

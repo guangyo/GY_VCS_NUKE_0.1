@@ -186,6 +186,10 @@ def script_version_info(proj, eps, shot, account):
             version_info['ver_dict'][ver_number] = [os.path.join(dir_name, file2), version_status]
     return version_info
 
+
+# test code =====================================
+
+
 if __name__ == '__main__':
     print script_version_info('lah', '02', 'shot01', 'billy')
 
